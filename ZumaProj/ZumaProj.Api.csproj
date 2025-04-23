@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Zuma.Application\Zuma.Application.csproj" />
     <ProjectReference Include="..\Zuma.Domain\Zuma.Domain.csproj" />
+    <ProjectReference Include="..\Zuma.Infrastructure\Zuma.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

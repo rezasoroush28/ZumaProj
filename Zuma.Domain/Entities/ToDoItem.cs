@@ -1,12 +1,23 @@
-﻿using Zuma.Domain.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Zuma.Domain.Enums;
 
 namespace Zuma.Domain.Entities
 {
     public class ToDoItem
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string Title { get; set; } = null!;
+
+        [MaxLength(500)]
         public string Description { get; set; } = null!;
-        public ToDoStatus status { get; set; }
+
+        [Required]
+        public ToDoStatus Status { get; set; }
     }
 }
