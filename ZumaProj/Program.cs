@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
+using Zuma.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ToDbContext>(options =>
+builder.Services.AddDbContext<ToDoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
 var app = builder.Build();
 
 

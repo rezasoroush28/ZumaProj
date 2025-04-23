@@ -12,9 +12,9 @@ namespace Zuma.Infrastructure.Repositories
     public class ToDoItemRepository : IToDoItemRepository
     {
 
-        private readonly ToDbContext _context;
+        private readonly ToDoContext _context;
 
-        public ToDoItemRepository(ToDbContext context)
+        public ToDoItemRepository(ToDoContext context)
         {
             _context = context;
         }

@@ -8,10 +8,15 @@ using Zuma.Domain.Entities;
 
 namespace Zuma.Infrastructure.Context
 {
-    public class ToDbContext : DbContext
+    public class ToDoContext : DbContext 
     {
+        public ToDoContext(DbContextOptions<ToDoContext> options)
+               : base(options)
+        {
+        }
         public DbSet<ToDoItem> ToDoItems { get; set; }
     }
+
 
     // No OnModelCreating override needed for these simple constraints
 }
