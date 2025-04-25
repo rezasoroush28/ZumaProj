@@ -12,10 +12,10 @@ namespace Zuma.Domain.Entities
 
         [Required]
         [MaxLength(100)]
-        public string Title { get; set; } = null!;
+        public string Title { get; set; }
 
         [MaxLength(500)]
-        public string Description { get; set; } = null!;
+        public string Description { get; set; }
 
         [Required]
         public ToDoStatus Status { get; set; }

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Zuma.Domain.Entities;
+using Zuma.Domain.Enums;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
 
@@ -11,7 +13,6 @@ namespace Zuma.Infrastructure.Repositories
 {
     public class ToDoItemRepository : IToDoItemRepository
     {
-
         private readonly ToDoContext _context;
 
         public ToDoItemRepository(ToDoContext context)
@@ -19,9 +20,21 @@ namespace Zuma.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task CreateToDoItem(string title, string description, int status)
+        {
+            await _context.ToDoItems.AddAsync(new ToDoItem
+            {
+                Title = title,
+                Description = description,
+                Status = (ToDoStatus)status
+            });
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteToDoItem(int id)
         {
-            var itemCount =await _context.ToDoItems.Where(i => i.Id == id).ExecuteDeleteAsync();
+            var itemCount = await _context.ToDoItems.Where(i => i.Id == id).ExecuteDeleteAsync();
 
             if (itemCount != 1)
                 throw new KeyNotFoundException($"ToDoItem with Id {id} was not found.");
