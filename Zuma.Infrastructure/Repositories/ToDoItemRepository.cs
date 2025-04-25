@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Zuma.Domain.Entities;
@@ -38,6 +39,28 @@ namespace Zuma.Infrastructure.Repositories
 
             if (itemCount != 1)
                 throw new KeyNotFoundException($"ToDoItem with Id {id} was not found.");
+        }
+
+        public async Task<List<ListAllToDoItemsDataDto>> ListAllToDoItems(ToDoStatus? status)
+        {
+            Expression<Func<ToDoItem, bool>> condition = i => true; // Default condition to include all items
+            if (status != null)
+            {
+                condition = i => i.Status == status; // Filter by status if provided
+            }
+
+            var results = await _context.ToDoItems
+                .Where(condition)
+                .Select(i => new ListAllToDoItemsDataDto
+                {
+                    Id = i.Id,
+                    Title = i.Title,
+                    Description = i.Description,
+                    Status = (i.Status)
+                })
+                .ToListAsync();
+
+            return results;
         }
     }
 }
