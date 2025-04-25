@@ -43,7 +43,7 @@ namespace Zuma.Application.CommandHandlers
             }
             catch (Exception ex)
             {
-                new CommandResponse<List<ListAllToDoItemsDto>>.Fail($"An error occurred while retrieving the ToDo items: {ex.Message}");
+                return CommandResponse<List<ListAllToDoItemsDto>>.Fail($"An error occurred while retrieving the ToDo items: {ex.Message}");
             }
         }
     }
