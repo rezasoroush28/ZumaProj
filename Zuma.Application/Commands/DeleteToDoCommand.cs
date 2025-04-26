@@ -6,7 +6,7 @@ namespace Zuma.Application.Commands
 {
     public sealed class DeleteToDoCommandRequest : IRequest<CommandResponse<DeleteToDoItemDto>>
     {
-        public int ToDoIemId { get; set; }
+        public int ToDoItemId { get; set; }
     }
 
     public class DeleteToDoItemDto

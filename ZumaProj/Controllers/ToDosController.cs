@@ -33,7 +33,7 @@ public class ToDosController : ControllerBase
 
     public async Task<IActionResult> DeleteToDoItem(int toDoItemId)
     {
-        var command = new DeleteToDoCommandRequest { ToDoIemId = toDoItemId };
+        var command = new DeleteToDoCommandRequest { ToDoItemId = toDoItemId };
         var result = await _mediator.Send(command);
         if(result.Success is false)
             return BadRequest(result.Message);
@@ -45,7 +45,7 @@ public class ToDosController : ControllerBase
 
     public async Task<IActionResult> GetAllToDoItems(ToDoStatus? status)
     {
-        var command = new ListAllToDoItemsCommand { Status = status };
+        var command = new ListAllToDoItemsCommandRequest { Status = status };
         var result = await _mediator.Send(command);
         if (result.Success is false)
             return BadRequest(result.Message);
@@ -53,18 +53,23 @@ public class ToDosController : ControllerBase
         return Ok(result);
     }
 
-    //[HttpPut("{id:guid}")]
-    //public async Task<IActionResult> Update(Guid id, UpdateToDoCommand cmd)
-    //{
-    //    if (id != cmd.Id) return BadRequest();
-    //    await _mediator.Send(cmd);
-    //    return NoContent();
-    //}
 
-    //    [HttpDelete("{id:guid}")]
-    //    public async Task<IActionResult> Delete(Guid id)
-    //    {
-    //        await _mediator.Send(new DeleteToDoCommand(id));
-    //        return NoContent();
-    //    }
+
+    [HttpPut("Update")]
+    public async Task<IActionResult> Update([FromForm] UpdateToDoItemModel updateToDoItemModel)
+    {
+        var command = new UpdateToDoItemCommandRequest
+        {
+            Id = updateToDoItemModel.Id,
+            Title = updateToDoItemModel.Title,
+            Description = updateToDoItemModel.Description,
+            Status = updateToDoItemModel.Status
+        };
+
+        var result = await _mediator.Send(command);
+        if (result.Success is false)
+            return BadRequest(result.Message);
+
+        return Ok(result);
+    }
 }

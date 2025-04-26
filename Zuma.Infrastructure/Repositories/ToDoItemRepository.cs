@@ -63,7 +63,7 @@ namespace Zuma.Infrastructure.Repositories
             return results;
         }
 
-        public async Task UpdateToDpItem(int id, string title, string description, int status)
+        public async Task UpdateToDoItem(int id, string title, string description, int status)
         {
             var existingItem = await _context.ToDoItems.FindAsync(id);
             if (existingItem is null)

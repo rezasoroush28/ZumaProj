@@ -23,7 +23,7 @@ namespace Zuma.Application.CommandHandlers
         {
             try
             {
-                await _toDoItemRepository.DeleteToDoItem(request.ToDoIemId);
+                await _toDoItemRepository.DeleteToDoItem(request.ToDoItemId);
                 return new CommandResponse<DeleteToDoItemDto>
                 {
                     Success = true,

@@ -10,7 +10,7 @@ using Zuma.Domain.Interfaces.IRepositories;
 
 namespace Zuma.Application.CommandHandlers
 {
-    public class ListAllToDoItemsCommandHandler : IRequestHandler<ListAllToDoItemsCommand, CommandResponse<List<ListAllToDoItemsDto>>>
+    public class ListAllToDoItemsCommandHandler : IRequestHandler<ListAllToDoItemsCommandRequest, CommandResponse<List<ListAllToDoItemsDto>>>
     {
         private readonly IToDoItemRepository _toDoItemRepository;
 
@@ -19,7 +19,7 @@ namespace Zuma.Application.CommandHandlers
             _toDoItemRepository = toDoItemRepository;
         }
 
-        public async Task<CommandResponse<List<ListAllToDoItemsDto>>> Handle(ListAllToDoItemsCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResponse<List<ListAllToDoItemsDto>>> Handle(ListAllToDoItemsCommandRequest request, CancellationToken cancellationToken)
         {
             try
             {

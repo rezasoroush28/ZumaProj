@@ -23,7 +23,7 @@ namespace Zuma.Application.CommandHandlers
         {
             try
             {
-                await _toDoItemRepository.UpdateToDpItem(request.Id, request.Description, request.Description, (int)request.Status);
+                await _toDoItemRepository.UpdateToDoItem(request.Id, request.Description, request.Description, (int)request.Status);
                 return new CommandResponse<UpdateDoItemDto>
                 {
                     Success = true,
@@ -35,7 +35,6 @@ namespace Zuma.Application.CommandHandlers
             {
                 return CommandResponse<UpdateDoItemDto>.Fail($"An error occurred while creating the ToDo item: {ex.Message}");
             }
-            throw new NotImplementedException();
         }
     }
 }
