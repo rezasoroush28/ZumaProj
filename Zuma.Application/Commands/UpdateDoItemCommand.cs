@@ -5,7 +5,7 @@ using Zuma.Domain.Enums;
 
 namespace Zuma.Application.Commands
 {
-    public sealed class UpdateDoItemCommand : IRequest<CommandResponse<UpdateDoItemDto>>
+    public sealed class UpdateToDoItemCommandRequest : IRequest<CommandResponse<UpdateDoItemDto>>
     {
         public int Id { get; set; }
         public string Title { get; set; }
