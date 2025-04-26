@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
@@ -11,14 +12,15 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMediatR(typeof(Application.AssemblyReference).Assembly);
 
 builder.Services.AddDbContext<ToDoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
 
 var app = builder.Build();
 
 
-builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

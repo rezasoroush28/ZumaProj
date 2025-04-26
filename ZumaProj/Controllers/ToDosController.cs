@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Zuma.Application.Commands;
 using Zuma.Domain.Entities;
+using Zuma.Domain.Enums;
+using ZumaProj.Api.Models;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -10,26 +12,54 @@ public class ToDosController : ControllerBase
     private readonly ISender _mediator;
     public ToDosController(ISender mediator) => _mediator = mediator;
 
-    //[HttpPost]
-    //public async Task<IActionResult> Create(CreateToDoCommand cmd)
-    //    => CreatedAtAction(null, new { id = await _mediator.Send(cmd) }, null);
-
-    [HttpPost("DeleteToDoItem")]
-
-    public async Task<IActionResult> DeleteToDoItem( int toDoItemId)
+    [HttpPost("CreateToDoItem")]
+    public async Task<IActionResult> Create([FromForm] CreateToDoItemModel model)
     {
-        var command = new DeleteToDoCommandRequest { ToDoIemId = toDoItemId};
+        var command = new CreateToDoCommandRequest
+        {
+            Title = model.Title,
+            Description = model.Description,
+            status = model.Status
+        };
+
         var result = await _mediator.Send(command);
+        if(result.Success is false)
+            return BadRequest(result.Message);
+
         return Ok(result);
     }
 
-    //    [HttpPut("{id:guid}")]
-    //    public async Task<IActionResult> Update(Guid id, UpdateToDoCommand cmd)
-    //    {
-    //        if (id != cmd.Id) return BadRequest();
-    //        await _mediator.Send(cmd);
-    //        return NoContent();
-    //    }
+    [HttpPost("DeleteToDoItem")]
+
+    public async Task<IActionResult> DeleteToDoItem(int toDoItemId)
+    {
+        var command = new DeleteToDoCommandRequest { ToDoIemId = toDoItemId };
+        var result = await _mediator.Send(command);
+        if(result.Success is false)
+            return BadRequest(result.Message);
+
+        return Ok(result);
+    }
+
+    [HttpPost("GetAllToDoItems")]
+
+    public async Task<IActionResult> GetAllToDoItems(ToDoStatus? status)
+    {
+        var command = new ListAllToDoItemsCommand { Status = status };
+        var result = await _mediator.Send(command);
+        if (result.Success is false)
+            return BadRequest(result.Message);
+
+        return Ok(result);
+    }
+
+    //[HttpPut("{id:guid}")]
+    //public async Task<IActionResult> Update(Guid id, UpdateToDoCommand cmd)
+    //{
+    //    if (id != cmd.Id) return BadRequest();
+    //    await _mediator.Send(cmd);
+    //    return NoContent();
+    //}
 
     //    [HttpDelete("{id:guid}")]
     //    public async Task<IActionResult> Delete(Guid id)
