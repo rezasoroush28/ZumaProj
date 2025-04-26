@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Zuma.Domain.Interfaces.IRepositories;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddValidatorsFromAssembly(typeof(Application.AssemblyReference).Assembly);
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Application.AssemblyReference).Assembly);
 
