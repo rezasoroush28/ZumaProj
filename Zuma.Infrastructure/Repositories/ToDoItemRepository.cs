@@ -9,6 +9,7 @@ using Zuma.Domain.Entities;
 using Zuma.Domain.Enums;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
+using Zuma.Infrastructure.Models;
 
 namespace Zuma.Infrastructure.Repositories
 {
@@ -41,7 +42,7 @@ namespace Zuma.Infrastructure.Repositories
                 throw new KeyNotFoundException($"ToDoItem with Id {id} was not found.");
         }
 
-        public async Task<List<ListAllToDoItemsDataDto>> ListAllToDoItems(ToDoStatus? status)
+        public async Task<List<Domain.Interfaces.IRepositories.ListAllToDoItemsDataDto>> ListAllToDoItems(ToDoStatus? status)
         {
             Expression<Func<ToDoItem, bool>> condition = i => true; // Default condition to include all items
             if (status != null)
@@ -51,7 +52,7 @@ namespace Zuma.Infrastructure.Repositories
 
             var results = await _context.ToDoItems
                 .Where(condition)
-                .Select(i => new ListAllToDoItemsDataDto
+                .Select(i => new Domain.Interfaces.IRepositories.ListAllToDoItemsDataDto
                 {
                     Id = i.Id,
                     Title = i.Title,
@@ -63,7 +64,7 @@ namespace Zuma.Infrastructure.Repositories
             return results;
         }
 
-        public async Task UpdateToDpItem(int id, string title, string description, int status)
+        public async Task UpdateToDoItem(int id, string title, string description, int status)
         {
             var existingItem = await _context.ToDoItems.FindAsync(id);
             if (existingItem is null)

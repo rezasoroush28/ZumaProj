@@ -23,7 +23,7 @@ namespace Zuma.Application.CommandHandlers
         {
             try
             {
-                await _toDoItemRepository.UpdateToDpItem(request.Id, request.Description, request.Description, (int)request.Status);
+                await _toDoItemRepository.UpdateToDoItem(request.Id, request.Description, request.Description, (int)request.Status);
                 return new CommandResponse<UpdateDoItemDto>
                 {
                     Success = true,
