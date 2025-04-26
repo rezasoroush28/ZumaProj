@@ -23,7 +23,7 @@ namespace Zuma.Application.CommandHandlers
         {
             try
             {
-                var dataResults = await _toDoItemRepository.ListAllToDoItems(request.status);
+                var dataResults = await _toDoItemRepository.ListAllToDoItems(request.Status);
                 var results = dataResults.Select(d => new ListAllToDoItemsDto
                 {
                     Id = d.Id,
@@ -31,6 +31,16 @@ namespace Zuma.Application.CommandHandlers
                     Description = d.Description,
                     Status = d.Status,  
                 }).ToList();
+
+                if (!results.Any()) 
+                {
+                    return new CommandResponse<List<ListAllToDoItemsDto>>
+                    {
+                        Success = true,
+                        Result = results,
+                        Message = "No ToDo Item was Found"
+                    };
+                }
 
                 return new CommandResponse<List<ListAllToDoItemsDto>>
                 {

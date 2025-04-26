@@ -7,7 +7,7 @@ namespace Zuma.Application.Commands
 {
     public sealed class ListAllToDoItemsCommand : IRequest<CommandResponse<List<ListAllToDoItemsDto>>>
     {
-        public ToDoStatus? status { get; set; }
+        public ToDoStatus? Status { get; set; }
     }
     public class ListAllToDoItemsDto
     {

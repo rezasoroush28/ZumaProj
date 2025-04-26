@@ -12,6 +12,7 @@ namespace Zuma.Domain.Interfaces.IRepositories
         Task<List<ListAllToDoItemsDataDto>> ListAllToDoItems(ToDoStatus? status);
         Task DeleteToDoItem(int id);
         Task CreateToDoItem(string title, string description, int status);
+        Task UpdateToDpItem(int id, string title, string description, int status);
     }
 
     public class ListAllToDoItemsDataDto
