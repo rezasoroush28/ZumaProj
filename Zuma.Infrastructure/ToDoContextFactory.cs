@@ -10,7 +10,7 @@ namespace Zuma.Infrastructure.Context
             var optionsBuilder = new DbContextOptionsBuilder<ToDoContext>();
 
             // اتصال مستقیم به SQL Server
-            var connectionString = "Server=.;Database=Zuma;Trusted_Connection=True;MultipleActiveResultSets=true";
+            var connectionString = "Server=.;Database=Zuma;Trusted_Connection=True;TrustServerCertificate=true";
             optionsBuilder.UseSqlServer(connectionString);
 
             return new ToDoContext(optionsBuilder.Options);
