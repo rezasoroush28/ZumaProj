@@ -15,6 +15,7 @@ namespace Zuma.Infrastructure.Context
         {
         }
         public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<BotUser> BotUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -27,5 +28,4 @@ namespace Zuma.Infrastructure.Context
     }
 
 
-    // No OnModelCreating override needed for these simple constraints
 }
