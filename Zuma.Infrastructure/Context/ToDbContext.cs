@@ -8,13 +8,22 @@ using Zuma.Domain.Entities;
 
 namespace Zuma.Infrastructure.Context
 {
-    public class ToDoContext : DbContext 
+    public class ToDoContext : DbContext
     {
         public ToDoContext(DbContextOptions<ToDoContext> options)
                : base(options)
         {
         }
         public DbSet<ToDoItem> ToDoItems { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BotUser>(entity =>
+            {
+                entity.HasIndex(e => e.ChatId).IsUnique();
+            });
+        }
     }
 
 
