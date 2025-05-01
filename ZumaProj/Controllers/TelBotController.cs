@@ -16,6 +16,8 @@ public class TelBotController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] Update update)
     {
+        
+
         // 1. پیام کاربر رو پردازش کن
         // 2. اگر متن داشت مثلا "لیست تسک ها" بود، بری از CQRS یک لیست بیاری
         // 3. جواب رو با botClient.SendTextMessageAsync بفرستی
