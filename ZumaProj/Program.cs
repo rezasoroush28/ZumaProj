@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
+using Zuma.Application.Interfaces;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
 using Zuma.Infrastructure.Repositories;
@@ -16,7 +17,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssembly(typeof(Application.AssemblyReference).Assembly);
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Application.AssemblyReference).Assembly);
-
+builder.Services.AddScoped<ITelegramMessageService, TelegramMessageService>();
+builder.Services.AddTransient<IBotUserRepository, BotUserRepository>();
 
 var botToken = builder.Configuration.GetSection("TelegramBot")["Token"];
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botToken));
@@ -36,7 +38,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseRouting();
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllers();
+//});
+
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

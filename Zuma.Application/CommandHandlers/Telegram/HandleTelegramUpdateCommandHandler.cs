@@ -1,24 +1,22 @@
 ﻿using MediatR;
 using Telegram.Bot;
-using Telegram.Bot.Types;
-using Zuma.Application.Commands;
-using Zuma.Application.Commands.Bot;
 using Application.Common.Responses;
 using Zuma.Application.Commands.Telegram;
+using Zuma.Application.Interfaces;
 
 namespace Zuma.Application.CommandHandlers.BotHandlers
 {
     public class HandleTelegramUpdateCommandHandler : IRequestHandler<HandleTelegramUpdateCommandRequest, CommandResponse<HandleTelegramUpdateDto>>
     {
-        private readonly ITelegramBotClient _botClient;
         private readonly IMediator _mediator;
+        private readonly ITelegramMessageService _messageService;
 
         public HandleTelegramUpdateCommandHandler(
-            ITelegramBotClient botClient,
-            IMediator mediator)
+            IMediator mediator,
+            ITelegramMessageService messageService)
         {
-            _botClient = botClient;
             _mediator = mediator;
+            _messageService = messageService;
         }
 
         public async Task<CommandResponse<HandleTelegramUpdateDto>> Handle(HandleTelegramUpdateCommandRequest request, CancellationToken cancellationToken)
@@ -26,7 +24,14 @@ namespace Zuma.Application.CommandHandlers.BotHandlers
             var update = request.TelUpdate;
 
             if (update.Message == null || string.IsNullOrEmpty(update.Message.Text))
-                return Unit.Value;
+
+                return new CommandResponse<HandleTelegramUpdateDto>
+                {
+                    Success = true,
+                    Result = null,
+                    Message = "start the bot"
+                };
+
 
             var chatId = update.Message.Chat.Id;
             var text = update.Message.Text.Trim().ToLower();
@@ -34,27 +39,31 @@ namespace Zuma.Application.CommandHandlers.BotHandlers
             switch (text)
             {
                 case "/start":
-                    var startResponse = await _mediator.Send(new StartBotCommand
+                    var startResponse = await _mediator.Send(new StartBotCommandRequest
                     {
                         ChatId = chatId,
-                        FirstName = update.Message.Chat.FirstName
+                        Username = update.Message.Chat.Username
                     });
 
-                    await _botClient.SendTextMessageAsync(
-                        chatId,
-                        startResponse.Result?.WelcomeMessage ?? "سلام!",
-                        cancellationToken: cancellationToken);
+                    await _messageService.SendMessageAsync(chatId, startResponse.Result.WelcomeMessage ,cancellationToken);
+
+                    //await _botClient.SendTextMessageAsync(
+                    //    chatId,
+                    //    startResponse.Result?.WelcomeMessage ?? "سلام!",
+                    //    cancellationToken: cancellationToken);
                     break;
 
                 default:
-                    await _botClient.SendTextMessageAsync(
-                        chatId,
-                        "دستور نامشخص است. از /start استفاده کن 😊",
-                        cancellationToken: cancellationToken);
+
+                    await _messageService.SendMessageAsync(chatId, "دستور نامشخص است. از /start استفاده کن 😊", cancellationToken);
+                    //await _botClient.SendTextMessageAsync(
+                    //    chatId,
+                    //    "دستور نامشخص است. از /start استفاده کن 😊",
+                    //    cancellationToken: cancellationToken);
                     break;
             }
 
-            return Unit.Value;
+            return new CommandResponse<HandleTelegramUpdateDto> { Success = true,};
         }
     }
 }
