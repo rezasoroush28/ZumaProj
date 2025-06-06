@@ -21,7 +21,7 @@ namespace Zuma.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task CreateToDoItem(string title, string description, int status)
+        public async Task CreateToDoItem(string title, string description, long chatId, int status)
         {
             await _context.ToDoItems.AddAsync(new ToDoItem
             {

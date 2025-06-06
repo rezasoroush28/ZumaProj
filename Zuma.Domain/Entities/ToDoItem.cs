@@ -19,5 +19,8 @@ namespace Zuma.Domain.Entities
 
         [Required]
         public ToDoStatus Status { get; set; }
+
+        [Required]
+        public long ChatId { get; set; }
     }
 }

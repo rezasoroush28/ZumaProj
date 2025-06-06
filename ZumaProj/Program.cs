@@ -17,15 +17,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddValidatorsFromAssembly(typeof(Application.AssemblyReference).Assembly);
 builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Application.AssemblyReference).Assembly);
-builder.Services.AddScoped<ITelegramMessageService, TelegramMessageService>();
 builder.Services.AddTransient<IBotUserRepository, BotUserRepository>();
-
 var botToken = builder.Configuration.GetSection("TelegramBot")["Token"];
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botToken));
+builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ToDoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
+builder.Services.AddSingleton<IUserSessionService, Zuma.Infrastructure.Services.UserSessionService>();
 
 var app = builder.Build();
 
@@ -44,7 +44,7 @@ app.UseRouting();
 //    endpoints.MapControllers();
 //});
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
