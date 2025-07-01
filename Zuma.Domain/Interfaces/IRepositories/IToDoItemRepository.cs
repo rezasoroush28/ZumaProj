@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Zuma.Domain.Entities;
 using Zuma.Domain.Enums;
 
 namespace Zuma.Domain.Interfaces.IRepositories
 {
     public interface IToDoItemRepository
     {
+        Task<List<ToDoItem>> GetToDoItemsByChatId(long chatId);
+        Task<ToDoItem> GetToDoItem(int id, long chatId);
         Task<List<ListAllToDoItemsDataDto>> ListAllToDoItems(ToDoStatus? status);
         Task DeleteToDoItem(int id);
         Task CreateToDoItem(string title, string description, long chatId, int status);

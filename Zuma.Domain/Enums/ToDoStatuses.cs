@@ -10,6 +10,7 @@ namespace Zuma.Domain.Enums
     {
         JustMade,
         InProgress,
+        canceled,
         Done
     }
 }

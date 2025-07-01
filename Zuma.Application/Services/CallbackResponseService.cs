@@ -9,6 +9,7 @@ using Zuma.Domain.Entities;
 using Zuma.Domain.Enums;
 using Zuma.Domain.Interfaces.IRepositories;
 using Microsoft.Extensions.Caching.Memory;
+using Telegram.Bot.Types.ReplyMarkups;
 
 public class CallbackResponseService : ITelegramResponseService
 {
@@ -99,6 +100,110 @@ public class CallbackResponseService : ITelegramResponseService
 
                     break;
                 }
+
+            case string callback when callback.StartsWith("show_todos_page_"):
+                {
+                    var pagePart = callback.Replace("show_todos_page_", "");
+                    int.TryParse(pagePart, out int page);
+                    const int pageSize = 5;
+
+                    var allItems = await _toDoItemRepository.GetToDoItemsByChatId(chatId);
+                    allItems = allItems.OrderBy(x => x.Status == ToDoStatus.JustMade ? 0 :
+                                x.Status == ToDoStatus.InProgress ? 1 :
+                                x.Status == ToDoStatus.Done ? 2 :
+                                3).ToList();
+
+                    var totalPages = (int)Math.Ceiling((double)allItems.Count / pageSize);
+                    page = Math.Clamp(page, 0, totalPages - 1); // جلوگیری از خطا
+
+                    var pageItems = allItems
+                        .Skip(page * pageSize)
+                        .Take(pageSize)
+                        .Select(item => new[]
+                        {
+            InlineKeyboardButton.WithCallbackData(
+                $"✨ {item.Title} - {item.Status}", $"todo_detail_{item.Id}")
+                        }).ToList();
+
+                    var navigationButtons = new List<InlineKeyboardButton[]>();
+
+                    if (totalPages > 1)
+                    {
+                        var navRow = new List<InlineKeyboardButton>();
+
+                        if (page > 0)
+                            navRow.Add(InlineKeyboardButton.WithCallbackData("⬅️ قبلی", $"show_todos_page_{page - 1}"));
+
+                        if (page < totalPages - 1)
+                            navRow.Add(InlineKeyboardButton.WithCallbackData("بعدی ➡️", $"show_todos_page_{page + 1}"));
+
+                        navigationButtons.Add(navRow.ToArray());
+                    }
+
+                    var markup = new InlineKeyboardMarkup(pageItems.Concat(navigationButtons));
+
+                    await _botClient.SendRequest(new SendMessageRequest
+                    {
+                        ChatId = chatId,
+                        Text = $"📝 لیست کارهای شما (صفحه {page + 1} از {totalPages}):",
+                        ReplyMarkup = markup
+                    }, cancellationToken);
+
+                    break;
+                }
+
+            case "show_todos":
+                {
+                    await _botClient.SendRequest(new SendMessageRequest
+                    {
+                        ChatId = chatId,
+                        Text = "در حال بارگذاری لیست کارها...",
+                        ReplyMarkup = new InlineKeyboardMarkup(new[]
+                        {
+            new[] { InlineKeyboardButton.WithCallbackData("📄 نمایش صفحه اول", "show_todos_page_0") }
+        })
+                    }, cancellationToken);
+
+                    break;
+                }
+
+            case string callback when callback.StartsWith("todo_detail_"):
+                {
+                    var idPart = callback.Replace("todo_detail_", "");
+                    if (!int.TryParse(idPart, out var todoId))
+                        break;
+
+                    var item = await _toDoItemRepository.GetToDoItem(todoId, chatId);
+                    if (item == null || item.ChatId != chatId)
+                    {
+                        await _botClient.SendRequest(new SendMessageRequest
+                        {
+                            ChatId = chatId,
+                            Text = "❌ کار مورد نظر یافت نشد یا متعلق به شما نیست."
+                        }, cancellationToken);
+                        break;
+                    }
+
+                    var statusButtons = new InlineKeyboardMarkup(new[]
+                                {
+                    new[] { InlineKeyboardButton.WithCallbackData("✅ انجام شد", $"mark_done_{todoId}") },
+                    new[] { InlineKeyboardButton.WithCallbackData("🕒 در حال انجام", $"mark_inprogress_{todoId}") },
+                    new[] { InlineKeyboardButton.WithCallbackData("❌ لغو شد", $"mark_canceled_{todoId}") }
+        });
+
+                    await _botClient.SendRequest(new SendMessageRequest
+                    {
+                        ChatId = chatId,
+                        Text = $"*{item.Title}*\n_{item.Description}_\n\nوضعیت فعلی: *{item.Status}*",
+                        ParseMode = ParseMode.Markdown,
+                        ReplyMarkup = statusButtons
+                    }, cancellationToken);
+
+                    break;
+                }
+
+
+
         }
     }
 }

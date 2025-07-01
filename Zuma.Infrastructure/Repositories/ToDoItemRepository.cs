@@ -41,6 +41,17 @@ namespace Zuma.Infrastructure.Repositories
                 throw new KeyNotFoundException($"ToDoItem with Id {id} was not found.");
         }
 
+        public Task<ToDoItem> GetToDoItem(int id, long chatId)
+        {
+            return _context.ToDoItems.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id && t.ChatId == chatId);  
+        }
+
+        public async Task<List<ToDoItem>> GetToDoItemsByChatId(long chatId)
+        {
+           return await _context.ToDoItems.AsNoTracking().Where(t => t.ChatId == chatId).ToListAsync();
+        }
+
         public async Task<List<ListAllToDoItemsDataDto>> ListAllToDoItems(ToDoStatus? status)
         {
             Expression<Func<ToDoItem, bool>> condition = i => true; // Default condition to include all items
