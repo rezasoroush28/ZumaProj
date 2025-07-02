@@ -202,8 +202,57 @@ public class CallbackResponseService : ITelegramResponseService
                     break;
                 }
 
+            case string cb when cb.StartsWith("mark_done_") ||
+                                cb.StartsWith("mark_inprogress_") ||
+                                cb.StartsWith("mark_canceled_"):
+                {
+                    var parts = cb.Split('_');          // mark, <status>, <id>
+                    var status = parts[1] switch
+                    {
+                        "done" => ToDoStatus.Done,
+                        "inprogress" => ToDoStatus.InProgress,
+                        "canceled" => ToDoStatus.Canceled,
+                        _ => ToDoStatus.JustMade
+                    };
+
+                    int.TryParse(parts[^1], out var todoId);
+
+                    // 3-b  fetch & validate ownership
+                    var item = await _toDoItemRepository.GetToDoItem(todoId, chatId);
+                    if (item is null)
+                    {
+                        await _botClient.SendRequest(new SendMessageRequest
+                        {
+                            ChatId = chatId,
+                            Text = "\"❌ موردی پیدا نشد\"."
+                        }, cancellationToken);
+
+                    }
+
+                    // 3-c  update
+                    await _toDoItemRepository.UpdateToDoItem(item.Id, item.Title, item.Description, (int)status);
+
+                    // 3-d  respond – reuse the same detail view but with fresh status
+                    var keyboard = new InlineKeyboardMarkup(new[]
+                    {
+                        new[] { InlineKeyboardButton.WithCallbackData("✅ انجام شد",      $"mark_done_{todoId}") },
+                        new[] { InlineKeyboardButton.WithCallbackData("🕒 در حال انجام",  $"mark_inprogress_{todoId}") },
+                        new[] { InlineKeyboardButton.WithCallbackData("❌ لغو شد",        $"mark_canceled_{todoId}") }
+                    });
+
+                    await _botClient.SendRequest(new SendMessageRequest
+                    {
+                        ChatId = chatId,
+                        Text = $"*{item.Title}*\n_{item.Description}_\n\nوضعیت فعلی: *{item.Status}*",
+                        ParseMode = ParseMode.Markdown,
+                        ReplyMarkup = keyboard
+                    }, cancellationToken);
 
 
+                    break;
         }
+
+
     }
+}
 }
