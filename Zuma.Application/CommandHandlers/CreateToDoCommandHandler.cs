@@ -23,7 +23,7 @@ namespace Zuma.Application.CommandHandlers
         {
             try
             {
-                await _toDoItemRepository.CreateToDoItem(request.Title, request.Description, (int)request.status);
+                await _toDoItemRepository.CreateToDoItem(request.Title, request.Description, 0, (int)request.status);
                 return new CommandResponse<CreateToDoItemDto>
                 {
                     Success = true,

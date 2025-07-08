@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Zuma.Application.Interfaces;
+using Zuma.Application.Interfaces.Telegram;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
 using Zuma.Infrastructure.Repositories;
@@ -26,6 +27,8 @@ builder.Services.AddDbContext<ToDoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
 builder.Services.AddSingleton<IUserSessionService, Zuma.Infrastructure.Services.UserSessionService>();
+builder.Services.AddScoped<ITelegramResponseService, PlainTextResponseService>();
+builder.Services.AddScoped<ITelegramResponseService, CallbackResponseService>();
 
 var app = builder.Build();
 

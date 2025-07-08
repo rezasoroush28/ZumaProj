@@ -31,7 +31,7 @@ public class CallbackResponseService : ITelegramResponseService
     public async Task ExecuteAsync(Update update, CancellationToken cancellationToken)
     {
         var callBack = update.CallbackQuery;
-        var chatId = update.Message.Chat.Id;
+        var chatId = update.CallbackQuery.Message.Chat.Id;
         var callBackRequest = callBack.Data;
 
         switch (callBackRequest)

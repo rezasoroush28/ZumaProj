@@ -8,6 +8,7 @@ using Zuma.Domain.Interfaces.IRepositories;
 using Telegram.Bot.Requests;
 using Microsoft.Extensions.Caching.Memory;
 using Zuma.Domain.Enums;
+using System.Text.Json;
 
 public class PlainTextResponseService : ITelegramResponseService
 {
@@ -88,7 +89,8 @@ public class PlainTextResponseService : ITelegramResponseService
             {
                 case ExpectedInputType.TodoTitle:
                     var tempToDoItem = new ToDoItem { Title = messageText };
-                    _memoryCache.Set($"todo-temp-{chatId}", tempToDoItem, TimeSpan.FromMinutes(10));
+                    var json = JsonSerializer.Serialize(tempToDoItem);
+                    _memoryCache.Set<string>($"todo-temp-{chatId}", json, TimeSpan.FromMinutes(10));
                     _userSessionService.SetExpectedInput(chatId, ExpectedInputType.TodoDescription);
                     var keyboard = new InlineKeyboardMarkup(new[]
                 {
@@ -108,8 +110,9 @@ public class PlainTextResponseService : ITelegramResponseService
                     break;
 
                 case ExpectedInputType.TodoDescription:
-                    if (_memoryCache.TryGetValue<ToDoItem>($"todo-temp-{chatId}", out var cachedItem))
+                    if (_memoryCache.TryGetValue<string>($"todo-temp-{chatId}", out var pastjson))
                     {
+                        var cachedItem = JsonSerializer.Deserialize<ToDoItem>(pastjson);
                         cachedItem.Description = messageText;
                         cachedItem.Status = ToDoStatus.JustMade;
                         _memoryCache.Remove($"todo-temp-{chatId}");

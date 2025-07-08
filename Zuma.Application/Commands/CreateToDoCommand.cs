@@ -6,6 +6,7 @@ namespace Zuma.Application.Commands
 {
     public sealed class CreateToDoCommandRequest : IRequest<CommandResponse<CreateToDoItemDto>>
     {
+        public long ChatId { get; set; }
         public string Title { get; set; } 
         public string Description { get; set; } 
         public ToDoStatus status { get; set; }
