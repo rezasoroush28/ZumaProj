@@ -1,12 +1,14 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Zuma.Application.Interfaces;
 using Zuma.Application.Interfaces.Telegram;
 using Zuma.Domain.Interfaces.IRepositories;
 using Zuma.Infrastructure.Context;
 using Zuma.Infrastructure.Repositories;
+using Zuma.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(typeof(Application.AssemblyReference).Assembly);
 builder.Services.AddTransient<IBotUserRepository, BotUserRepository>();
 var botToken = builder.Configuration.GetSection("TelegramBot")["Token"];
-builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(botToken));
+
+builder.Services.AddSingleton<ITelegramBotClient>(provider =>
+    new TelegramBotClient(builder.Configuration["Telegram:BotToken"]));
+
 builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ToDoContext>(options =>
@@ -29,6 +34,7 @@ builder.Services.AddScoped<IToDoItemRepository, ToDoItemRepository>();
 builder.Services.AddSingleton<IUserSessionService, Zuma.Infrastructure.Services.UserSessionService>();
 builder.Services.AddScoped<ITelegramResponseService, PlainTextResponseService>();
 builder.Services.AddScoped<ITelegramResponseService, CallbackResponseService>();
+builder.Services.AddHostedService<TelegramInitializer>();
 
 var app = builder.Build();
 

@@ -90,7 +90,7 @@ public class PlainTextResponseService : ITelegramResponseService
                 case ExpectedInputType.TodoTitle:
                     var tempToDoItem = new ToDoItem { Title = messageText };
                     var json = JsonSerializer.Serialize(tempToDoItem);
-                    _memoryCache.Set<string>($"todo-temp-{chatId}", json, TimeSpan.FromMinutes(10));
+                    _memoryCache.Set<string>($"todo-temp-{chatId}", json, TimeSpan.FromMinutes(1));
                     _userSessionService.SetExpectedInput(chatId, ExpectedInputType.TodoDescription);
                     var keyboard = new InlineKeyboardMarkup(new[]
                 {
@@ -116,7 +116,8 @@ public class PlainTextResponseService : ITelegramResponseService
                         cachedItem.Description = messageText;
                         cachedItem.Status = ToDoStatus.JustMade;
                         _memoryCache.Remove($"todo-temp-{chatId}");
-                        await _toDoItemRepository.CreateToDoItem(cachedItem.Title, cachedItem.Description, chatId, (int)ToDoStatus.JustMade);
+                        var newJson = JsonSerializer.Serialize(cachedItem);
+                        _memoryCache.Set<string>($"todo-temp-{chatId}", newJson, TimeSpan.FromMinutes(1));
                         var nesxtKeyboard = new InlineKeyboardMarkup(new[]
                         {
                             new[]
@@ -125,11 +126,11 @@ public class PlainTextResponseService : ITelegramResponseService
                             } 
                         });
 
+                        
                         await _telegramBotClient.SendRequest(new SendMessageRequest
                         {
                             ChatId = chatId,
-                            Text = $"✅ کار جدید با موفقیت ثبت شد:\n*{cachedItem.Title}",
-                            ParseMode = ParseMode.Markdown,
+                            Text = $"✅ اطلاعات ثبت شد:\n*{cachedItem.Title}",
                             ReplyMarkup = nesxtKeyboard
                         }, cancellationToken);
                     }

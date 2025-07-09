@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System.Text.Json;
 using System.Threading;
@@ -14,15 +15,26 @@ public class TelBotController : ControllerBase
 {
     private readonly ITelegramBotClient _botClient;
     private readonly ISender _mediator;
-    public TelBotController(ITelegramBotClient botClient, ISender mediator)
+    private readonly IMemoryCache _memoryCache;
+    public TelBotController(ITelegramBotClient botClient, ISender mediator, IMemoryCache memoryCache)
     {
         _botClient = botClient;
         _mediator = mediator;
+        _memoryCache = memoryCache;
     }
 
     [HttpPost("post")]
     public async Task<IActionResult> Post([FromBody] Update update, CancellationToken cancellationToken)
     {
+        var updateId = update.Id;
+        var key = $"handled-update-{updateId}";
+
+        if (_memoryCache.TryGetValue(key, out _))
+        {
+            return Ok();
+        }
+
+        _memoryCache.Set(key, true, TimeSpan.FromSeconds(40));
         var command = new HandleTelegramUpdateCommandRequest { TelUpdate = update };
         await _mediator.Send(command, cancellationToken);
         return Ok();

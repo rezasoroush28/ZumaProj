@@ -10,6 +10,7 @@ using Zuma.Domain.Enums;
 using Zuma.Domain.Interfaces.IRepositories;
 using Microsoft.Extensions.Caching.Memory;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.Text.Json;
 
 public class CallbackResponseService : ITelegramResponseService
 {
@@ -65,8 +66,9 @@ public class CallbackResponseService : ITelegramResponseService
 
             case "save_todo":
                 {
-                    if (_memoryCache.TryGetValue<ToDoItem>($"todo-temp-{chatId}", out var cachedItem))
+                    if (_memoryCache.TryGetValue<string>($"todo-temp-{chatId}", out var json))
                     {
+                        var cachedItem = JsonSerializer.Deserialize<ToDoItem>(json);
                         cachedItem.Status = ToDoStatus.JustMade;
                         cachedItem.ChatId = chatId;
 
@@ -83,7 +85,6 @@ public class CallbackResponseService : ITelegramResponseService
                         {
                             ChatId = chatId,
                             Text = $"✅ کار جدید با موفقیت ذخیره شد:\n*{cachedItem.Title}*{(string.IsNullOrWhiteSpace(cachedItem.Description) ? "" : $"\n_{cachedItem.Description}_")}",
-                            ParseMode = ParseMode.Markdown
                         }, cancellationToken);
                     }
                     else
