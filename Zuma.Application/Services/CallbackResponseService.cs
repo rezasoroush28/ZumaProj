@@ -18,10 +18,12 @@ public class CallbackResponseService : ITelegramResponseService
     private readonly ITelegramBotClient _botClient;
     private readonly IUserSessionService _userSessionService;
     private IMemoryCache _memoryCache;
-    public CallbackResponseService(ITelegramBotClient botClient, IUserSessionService userSessionService)
+    public CallbackResponseService(ITelegramBotClient botClient, IUserSessionService userSessionService, IMemoryCache memoryCache, IToDoItemRepository toDoItemRepository)
     {
         _botClient = botClient;
         _userSessionService = userSessionService;
+        _memoryCache = memoryCache;
+        _toDoItemRepository = toDoItemRepository;
     }
 
     public bool CanHandle(Update update)

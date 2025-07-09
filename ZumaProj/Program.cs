@@ -35,6 +35,7 @@ builder.Services.AddSingleton<IUserSessionService, Zuma.Infrastructure.Services.
 builder.Services.AddScoped<ITelegramResponseService, PlainTextResponseService>();
 builder.Services.AddScoped<ITelegramResponseService, CallbackResponseService>();
 builder.Services.AddHostedService<TelegramInitializer>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
